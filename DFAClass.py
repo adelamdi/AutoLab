@@ -116,3 +116,19 @@ class DFA:
                 if distances[next_state] is None:
                     distances[next_state] = distances[state] + 1
                     queue.append(next_state)
+     
+    def Complement(self):
+        #Reverse Final and Normal States
+        NewFinalStates = []
+        for State in self.states:
+            if not(State in self.final_states):
+                NewFinalStates.append(State)
+        
+        newDFA = DFA(
+            states=self.states,
+            input_symbols=self.input_symbols,
+            transitions=self.transitions,
+            initial_state=self.initial_state,
+            final_states=NewFinalStates
+        )
+        return newDFA
