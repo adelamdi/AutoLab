@@ -200,3 +200,21 @@ class DFA:
         final_states=newFinalStates
         )
         return dfas
+
+    def Subtraction(self,OtherDFA):
+        # Subtract of A and B equals to A Intersection with B'
+        OtherDFAComplement = OtherDFA.Complement()
+        return self.Intersection(OtherDFAComplement)
+
+    def isEqual(self,OtherDFA):
+        selfgraph = self.ToGraph()
+        OtherDFAGraph = OtherDFA.ToGraph()
+        return nx.is_isomorphic(selfgraph, OtherDFAGraph)
+    
+    def isSubset(self,OtherDFA):
+        # if a intersect b equals a then a is a subset of b
+        intersect = self.Intersection(OtherDFA)
+        if self.isEqual(intersect):
+            return True
+        else:
+            return False
