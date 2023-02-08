@@ -218,3 +218,130 @@ class DFA:
             return True
         else:
             return False
+
+    def RemoveUnreachables(self):
+        #Create Reachables Array
+        Reachables = []
+        States = []
+        Reachables.append(self.initial_state)
+        States.append(self.initial_state)
+        while(len(States)>0):
+            state = States.pop(0)
+            for next_state in self.transitions[state].values():
+                if not(next_state in Reachables):
+                    Reachables.append(next_state)
+                    States.append(next_state)
+        UnReachables = []
+        # if one state isnt in reachables its unreachable!
+        for State in self.states:
+            if not(State in Reachables):
+                UnReachables.append(State)
+        #Remove Unreachable from States,FinalStates and Transitions
+        for i in range (0,len(UnReachables)):
+            self.transitions.pop(UnReachables[i])
+            self.states.remove(UnReachables[i])
+            if UnReachables[i] in self.final_states:
+                self.final_states.remove(UnReachables[i])
+
+    def MinimizeDFA(self):
+        self.RemoveUnreachables()
+        table = []
+        #First Equivalence Table
+        NoneFinals = []
+        Finals = []
+        for State in self.states:
+            if not(State in self.final_states):
+                NoneFinals.append(State)
+            else:
+                Finals.append(State)
+        table.append(NoneFinals)
+        table.append(Finals)
+        #Check Equivalency Algorithm
+        flag = False
+        Steps = 0
+        breaking = False
+        #While true, Break when we reach to final Equivalence Sets
+        while True:
+            breaking = False
+            Changed=False
+            # Checking All sets in equivalency table
+            for LargePack in table:
+                if breaking==True:
+                    break
+                for X in LargePack:
+                    if breaking == True:
+                        break
+                    #Check X with all other largepac items
+                    for Y in LargePack:
+                        if breaking == True:
+                            break
+
+                        if X!=Y:
+                            #Check for All Alphabets
+                            for Alphabet in self.input_symbols:
+                                if breaking == True:
+                                    break
+
+                                XGoesTo = self.transitions.get(X).get(Alphabet)
+                                YGoesTo = self.transitions.get(Y).get(Alphabet)
+
+                                #Check For Targets in one equivalence CLass
+                                smallflag = False
+
+                                for Pack in table:
+                                    if breaking == True:
+                                        break
+                                    if XGoesTo in Pack and YGoesTo in Pack:
+                                        smallflag=True
+                                        # They are in one equivalence class
+
+                                if smallflag == False:
+                                    # decide X should leave that pack or y?
+                                    for Other in LargePack:
+
+                                        if breaking == True:
+                                            break
+
+                                        if Other != X and Other != Y:
+                                            #Compare X with Other if there was in one equivalence set, y will leave
+                                            for alpha in self.input_symbols:
+
+                                                if breaking == True:
+                                                    break
+
+                                                xGoesTo = self.transitions.get(X).get(alpha)
+                                                OtherGoesTo = self.transitions.get(Y).get(alpha)
+                                                smallestflag = False
+                                                for Pack in table:
+                                                    if xGoesTo in Pack and OtherGoesTo in Pack:
+                                                        smallestflag=True
+                                                        #Other State and X are in one equivalence class and y should leave this et
+                                                        table.append([Y])
+                                                        LargePack.remove(Y)
+                                                        Changed=True
+                                                        breaking = True
+                                                        break
+                                    # Y Leaving this set of equivalence table         
+                                    if breaking==True:
+                                        break
+                                    table.append([X])
+                                    LargePack.remove(X)
+                                    Changed=True
+                                    breaking = True
+                                    break
+            # Checking Again
+            # if there isnt any change in one round of checking all table, it means we reached to final equivalence table
+            if Changed == False:
+                break
+        #our equivalence class is table, lets create a dfa with this table
+        newTransition = {}
+        for Tab in table:
+            newTransition[str(Tab)] = self.transitions.get(Tab[0])
+        newdfa = DFA(
+        states=self.states,
+        input_symbols=self.input_symbols,
+        transitions=newTransition,
+        initial_state=self.initial_state,
+        final_states=self.final_states
+        )
+        return newdfa
