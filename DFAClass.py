@@ -132,3 +132,71 @@ class DFA:
             final_states=NewFinalStates
         )
         return newDFA
+    def Union(self,OtherDFA):
+        newStates = []
+        newTransition = {}
+        newFinalStates = []
+        newInitialState = ''
+        for fstate in self.states:
+            for sstate in OtherDFA.states:
+                #Create new state name
+                newstate = fstate + sstate
+                newStates.append(newstate)
+                #New Final State
+                if fstate in self.final_states or sstate in OtherDFA.final_states:
+                    newFinalStates.append(fstate+sstate)
+                #New Initial State
+                if fstate == self.initial_state and sstate == OtherDFA.initial_state:
+                    newInitialState = fstate+sstate
+                #New Transition
+                dest = {}
+                for alpha in self.input_symbols:
+                    #New Dictionary for Destinations
+                    fgoesto = self.transitions.get(fstate).get(alpha)
+                    sgoesto = OtherDFA.transitions.get(sstate).get(alpha)
+                    dest.update({alpha:fstate+sstate})
+                newTransition.update({fstate+sstate:dest})
+        #Create new DFA and return it
+        dfas = DFA(
+        states=newStates,
+        input_symbols=self.input_symbols,
+        transitions=newTransition,
+        initial_state=newInitialState,
+        final_states=newFinalStates
+        )
+        return dfas
+
+    def Intersection(self,OtherDFA):
+
+        newStates = []
+        newTransition = {}
+        newFinalStates = []
+        newInitialState = ''
+        for fstate in self.states:
+            for sstate in OtherDFA.states:
+                #Create new state name
+                newstate = fstate + sstate
+                newStates.append(newstate)
+                #New Final State
+                if fstate in self.final_states and sstate in OtherDFA.final_states:
+                    newFinalStates.append(fstate+sstate)
+                #New Initial State
+                if fstate == self.initial_state and sstate == OtherDFA.initial_state:
+                    newInitialState = fstate+sstate
+                #New Transition
+                dest = {}
+                for alpha in self.input_symbols:
+                    #New Dictionary for Destinations
+                    fgoesto = self.transitions.get(fstate).get(alpha)
+                    sgoesto = OtherDFA.transitions.get(sstate).get(alpha)
+                    dest.update({alpha:fstate+sstate})
+                newTransition.update({fstate+sstate:dest})
+        #Create new DFA and return it   
+        dfas = DFA(
+        states=newStates,
+        input_symbols=self.input_symbols,
+        transitions=newTransition,
+        initial_state=newInitialState,
+        final_states=newFinalStates
+        )
+        return dfas
