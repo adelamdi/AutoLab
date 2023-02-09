@@ -22,9 +22,9 @@ class DFA:
         for c in Text:
             current = self.transitions.get(current).get(c)
         if current in self.final_states :
-            print('Accept')
+            return('Accept')
         else:
-            print('Not Accept')
+            return('Not Accept')
 
     def IsNull(self):
         #Return True if there is a final state in reachable states from initial state
@@ -154,7 +154,7 @@ class DFA:
                     #New Dictionary for Destinations
                     fgoesto = self.transitions.get(fstate).get(alpha)
                     sgoesto = OtherDFA.transitions.get(sstate).get(alpha)
-                    dest.update({alpha:fstate+sstate})
+                    dest.update({alpha:fgoesto+sgoesto})
                 newTransition.update({fstate+sstate:dest})
         #Create new DFA and return it
         dfas = DFA(
@@ -189,7 +189,7 @@ class DFA:
                     #New Dictionary for Destinations
                     fgoesto = self.transitions.get(fstate).get(alpha)
                     sgoesto = OtherDFA.transitions.get(sstate).get(alpha)
-                    dest.update({alpha:fstate+sstate})
+                    dest.update({alpha:fgoesto+sgoesto})
                 newTransition.update({fstate+sstate:dest})
         #Create new DFA and return it   
         dfas = DFA(
@@ -256,6 +256,7 @@ class DFA:
                 Finals.append(State)
         table.append(NoneFinals)
         table.append(Finals)
+        
         #Check Equivalency Algorithm
         flag = False
         Steps = 0
@@ -336,7 +337,10 @@ class DFA:
         #our equivalence class is table, lets create a dfa with this table
         newTransition = {}
         for Tab in table:
-            newTransition[str(Tab)] = self.transitions.get(Tab[0])
+            right = ''
+            for o in Tab:
+                right += o
+            newTransition[right] = self.transitions.get(Tab[0])
         newdfa = DFA(
         states=self.states,
         input_symbols=self.input_symbols,
@@ -345,3 +349,12 @@ class DFA:
         final_states=self.final_states
         )
         return newdfa
+
+    def PrintDFA(self):
+        print('DFA Data:')
+        print('DFA States: ' + str(self.states))
+        print('DFA Alphabets: ' + str(self.input_symbols))
+        print('DFA Transition Function: ' + str(self.transitions))
+        print('DFA Initial State: ' + str(self.initial_state))
+        print('DFA Final State: ' + str(self.final_states))
+

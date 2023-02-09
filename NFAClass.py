@@ -16,7 +16,6 @@ class NFA:
     
     def ToDFA(self):
         #Convert NFA to DFA
-
         dfastates = []
         dfatransition = {}
         dfafinal = {}
