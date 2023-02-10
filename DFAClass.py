@@ -101,21 +101,24 @@ class DFA:
 
 
     def MinimumWordLength(self):
-        # Return MinimumWordLength Accepted, start from initial state and search with length 1, then increase length
-        queue = deque()
-        #Distances: Dictionary for storing states with them length
-        distances = defaultdict(lambda: None)
-        distances[self.initial_state] = 0
-        queue.append(self.initial_state)
-        while queue:
-            state = queue.popleft()
-            # Breaking Condition, We Reach final state and return length of path to reaching this state which is final
-            if state in self.final_states:
-                return distances[state]
-            for next_state in self.transitions[state].values():
-                if distances[next_state] is None:
-                    distances[next_state] = distances[state] + 1
-                    queue.append(next_state)
+        if self.IsFinite():
+            # Return MinimumWordLength Accepted, start from initial state and search with length 1, then increase length
+            queue = deque()
+            #Distances: Dictionary for storing states with them length
+            distances = defaultdict(lambda: None)
+            distances[self.initial_state] = 0
+            queue.append(self.initial_state)
+            while queue:
+                state = queue.popleft()
+                # Breaking Condition, We Reach final state and return length of path to reaching this state which is final
+                if state in self.final_states:
+                    return distances[state]
+                for next_state in self.transitions[state].values():
+                    if distances[next_state] is None:
+                        distances[next_state] = distances[state] + 1
+                        queue.append(next_state)
+        else:
+            return 'Infinite Language'
      
     def Complement(self):
         #Reverse Final and Normal States
@@ -167,7 +170,6 @@ class DFA:
         return dfas
 
     def Intersection(self,OtherDFA):
-
         newStates = []
         newTransition = {}
         newFinalStates = []
